@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+SITEMAP: http://site6218880.sfurlan.com/sitemap.xml
