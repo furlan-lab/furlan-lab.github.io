@@ -70,6 +70,18 @@ d-block w-100 {
     width: 200px;
 }
 
+/*** Images ***/
+.myimg {
+	width:auto;
+	text-align:center;
+	padding:10px;
+}
+img {
+	max-width:100%;
+			height:auto;
+}
+
+
 /*** Spinner ***/
 #spinner {
     opacity: 0;
