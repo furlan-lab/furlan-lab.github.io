@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
+	
 <head>
+	
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+	
     <meta charset="utf-8">
     <title>The Furlan Lab at the FHCC</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -313,7 +320,145 @@
     </div>
     <!-- Collaborators End -->
 
+	
+<!-- Carousel wrapper -->
+<div class="container-xxl py-5">
+        <div class="container">
+		<div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <div class="d-inline-block rounded-pill bg-secondary text-primary py-1 px-3 mb-3">Other Stuff</div>
+                <h1 class="display-6 mb-5">Fun</h1>
+			<h5> Coming Soon </h5>
+            </div>
+	</div>
+	</div>
+	
+	
+	
+<script> /***
+<!-- Carousel wrapper -->
+<div class="container-xxl py-5">
+        <div class="container">
+		<div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <div class="d-inline-block rounded-pill bg-secondary text-primary py-1 px-3 mb-3">Other Stuff</div>
+                <h1 class="display-6 mb-5">Fun</h1>
+            </div>
+		<div class="container-lg my-3">
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+        <!-- Carousel indicators -->
+        <ol class="carousel-indicators">
+            <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
+            <li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
+            <li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
+        </ol>
+        
+        <!-- Wrapper for carousel items -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="img/fun/2.jpg" class="d-block w-100" alt="Slide 1">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Skiing!</h5>
+                    <p>Some demonstrative placeholder content for the first slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/fun/1.jpg" class="d-block w-100" alt="Slide 2">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Second slide label</h5>
+                    <p>Some demonstrative placeholder content for the second slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/fun/3.jpg" class="d-block w-100" alt="Slide 3">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some demonstrative placeholder content for the third slide.</p>
+                </div>
+            </div>
+			            <div class="carousel-item">
+                <img src="img/fun/4.jpg" class="d-block w-100" alt="Slide 4">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some demonstrative placeholder content for the third slide.</p>
+                </div>
+            </div>
+			  <div class="carousel-item">
+                <img src="img/fun/5.jpg" class="d-block w-100" alt="Slide 5">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some demonstrative placeholder content for the third slide.</p>
+                </div>
+            </div>
+			            <div class="carousel-item">
+                <img src="img/fun/6.jpg" class="d-block w-100" alt="Slide 6">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some demonstrative placeholder content for the third slide.</p>
+                </div>
+            </div>
+			            <div class="carousel-item">
+                <img src="img/fun/7.jpg" class="d-block w-100" alt="Slide 7">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some demonstrative placeholder content for the third slide.</p>
+                </div>
+         </div>
+       </div>
 
+        <!-- Carousel controls -->
+        <a class="carousel-control-prev" href="#myCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#myCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
+    </div>
+	</div>
+</div>
+<!-- Carousel wrapper -->
+
+
+	<div class="container-xxl py-5">
+        <div class="container">
+		<div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <div class="d-inline-block rounded-pill bg-secondary text-primary py-1 px-3 mb-3">Other Stuff</div>
+                <h1 class="display-6 mb-5">Fun</h1>
+            
+			<div class="ajax-inserted-content">
+  <!-- Section Gallery -->
+  <section class="section gallery grid layout-4-col">
+   <div class="container">
+     <div class="row">
+     <?php
+        $imagesPath = '/img/fun/';
+        // this is assuming your website has a folder at the document-root level called 'portfolio-images'.
+        // document-root means where your top level index.html (or index.php) is.
+        $dir = $_SERVER['DOCUMENT_ROOT'] .  $imagesPath; 
+        $files = scandir($dir);
+        $exts = ['png','jpg','jpeg','gif','bmp','webp'];
+        foreach ($files as $file) {
+          if ($file === '..' || $file === '.') continue;  
+          $ext = explode(".", $file);
+          $ext = strToLower($ext[count($ext)-1]);
+          if (!in_array($ext, $exts)) continue; // if not a valid image file, skip 
+     ?>
+  <div class="col-3 col-lg-4 col-md-6 col-sm-12">
+     <div class="gallery-item">
+       <div class="gallery-img">
+         <img data-svg="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzIDIiPjwvc3ZnPg==" src="<?php echo $imagesPath . $file;?>" alt="img1">
+
+<img data-lazy-image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzIDIiPjwvc3ZnPg==" data-src="<?php echo $imagesPath . $file;?>" alt="Demo img">
+       </div>
+     </div>
+   </div>
+        
+<?php }?>
+			
+			
+			</div>
+		</div>
+	  </div>
+</div>
+***/ </script>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">

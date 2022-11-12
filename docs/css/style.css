@@ -65,7 +65,10 @@ h6,
     padding-bottom: 10px !important;
 }
 
-
+/*** Carosel ***/
+d-block w-100 {
+    width: 200px;
+}
 
 /*** Spinner ***/
 #spinner {
