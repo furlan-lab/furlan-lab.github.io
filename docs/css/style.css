@@ -38,6 +38,12 @@ h6,
     width: 74%;
     line-height:1.3
 }
+/*
+hp  {
+float: left;    
+ margin: 0 15px 0 0;
+}
+*/
 
 /*** Lab members ***/
 .lm-item {
