@@ -1,9 +1,9 @@
 /********** Template CSS **********/
 :root {
-    --primary: #16D5FF;
-    --secondary: #999999;
-    --light: #F2F8FE;
-    --dark: #111111;
+    --primary: #0A799A;
+    --secondary: #112345;
+    --light: #0A799A;
+    --dark: #112345;
 }
 
 .back-to-top {
@@ -25,11 +25,11 @@ h6,
 
 /*** Citations ***/
 .citation-wrap {
-	color:black;
+	color:#112345;
     margin: 10 0 4 4;
     padding-left: 70px;
     overflow: hidden;
-    border-top:2px solid #e2e0e0;
+    border-top:2px solid #B4AEAE;
 	min-width: 420px;
 }
 
@@ -59,7 +59,8 @@ float: left;
     height: 100%;
     top: 0;
     left: 0;
-    background: rgba(0, 0, 0, .7);
+/*    background: rgba(0, 0, 0, .7);*/
+	background: #112345;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -220,7 +221,7 @@ img {
 }
 
 .navbar .btn:hover {
-    color: #FFFFFF !important;
+    color: #112345 !important;
     background: var(--primary) !important;
 }
 
