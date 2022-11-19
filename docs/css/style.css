@@ -40,6 +40,12 @@ h6,
     width: 80%;
     line-height:1.4;
 }
+
+/*
+.citation-wrap .link {
+	background-color: #f44336;
+}
+*/
 /*
 hp  {
 float: left;    
@@ -59,8 +65,7 @@ float: left;
     height: 100%;
     top: 0;
     left: 0;
-/*    background: rgba(0, 0, 0, .7);*/
-	background: #112345;
+	background: rgba(0, 0, 0, .7);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
