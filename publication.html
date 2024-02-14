@@ -103,614 +103,109 @@
     </div>
     <!-- Header End -->
 
-	
-<div class="citation-wrap">
-<h1>2022</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://dm5migu4zj3pb.cloudfront.net/volumes/132/22/132-22-cover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>		
-      <span class="authors" style="">
-            Le Q, Hadland B, Smith JL, Leonti A, Huang BJ, Ries R, Hylkema TA, Castro S, Tang TT, McKay CN, Perkins L, Pardo L, Sarthy J, Beckman AK, Williams R, Idemmili R, <strong>Furlan S</strong>, Ishida T, Call L, Srivastava S, Loeb AM, Milano F, Imren S, Morris SM, Pakiam F, Olson JM, Loken MR, Eidenschink Brodersen L, Riddell SR, Tarlock K, Bernstein ID, Loeb KR, Meshinchi S.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/36136600/">
-                CBFA2T3-GLIS2 model of pediatric acute megakaryoblastic leukemia identifies FOLR1 as a CAR T cell target.
-            </a><span class="source">J Clin Invest</span>.
-        
-        
-            <span class="pubdate">2022 Nov 15;<span class="volume">132</span><span class="issue">(22)</span><span class="pages">:e157101</span><span>. <span class="doi">doi: 10.1172/JCI157101. </span><span class="pubstatus">Epub 2022 Sept 22. </span><span class="pmid">PubMed PMID:
-            36136600</span><span>. </span>
-    </div>
-  </div>
-</div>
+	<script>
+var HTMLpublication = '%authors% (%date%) \'%title%\' <i>%journal%</i>,<b>%volume%</b> %issue%%pages%PMID:<a href="%data%"target="_blank"> %PMID% </a></br></br>'
+
+var publications, idStringList;
+var pubmedSearchAPI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?";
+var pubmedSummaryAPI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?";
+var database = "db=pubmed";
+var returnmode = "&retmode=json";
+var returnmax = "&retmax=100";
+var searchterm = "&term=Furlan, SN[Author] OR Furlan, Scott[Author])";
+var returntype = "&rettype=abstract";
+var idURL = pubmedSearchAPI + database + returnmode + returnmax + searchterm
+console.log(idURL);
+
+var getPubmed = function(url) { //passed url
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status == 200) { //status 200 signifies OK (http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp)
+                resolve(xhr.response);
+            } else {
+                reject(status);
+            }
+        };
+        xhr.send();
+    });
+};
+getPubmed(idURL).then(function(data) {
+    var idList = data.esearchresult.idlist;
+    idStringList = idList.toString(); //converts the idlist to a string to be appended to the search url
+    idStringList = '&id=' + idStringList;
+    summaryURL = pubmedSummaryAPI + database + returnmode + returntype + idStringList;
+    getPubmed(summaryURL).then(function(summary) {
+        publications = formatReferences(summary);
+        console.log(publications);	
+		document.getElementById("demo").innerHTML = publications;	//Here change the 
+		
+    }, function(status) {
+        publications = 'Something went wrong getting the ids.';
+    });
+}, function(status) {
+    publications = 'Something went wrong getting the ids.';
+});
 
 
-	  
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-		<img src="https://www.science.org/cdn-cgi/image/width=400/cms/asset/70388edd-1223-455e-923b-7d9fbb47c946/sciimmunol.2022.7.issue-77.largecover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Minnie SA, <strong>Waltner OG</strong>, Ensbey KS, Nemychenkov NS, Schmidt CR, <strong>Bhise SS</strong>, Legg SRW, Campoy G, Samson LD, Kuns RD, Zhou T, Huck JD, Vuckovic S, Zamora D, Yeh A, Spencer A, Koyama M, Markey KA, Lane SW, Boeckh M, Ring AM, <strong>Furlan SN</strong>, Hill GR.
-      </span><a href="https://pubmed.ncbi.nlm.nih.gov/36240285/">
-                Depletion of exhausted alloreactive T cells enables targeting of stem-like memory T cells to generate tumor-specific immunity.
-            </a><span class="source">Sci Immunol</span>.
-      
-        
-      <span class="pubdate">2022 Oct 21;</span><span class="volume">7</span><span class="issue">(76)</span><span class="pages">:eabo3420</span><span>. </span><span class="doi">doi: 10.1126/sciimmunol.abo3420. </span><span class="pubstatus">Epub 2022 Oct 14. </span><span class="pmid">PubMed PMID:
-            36240285</span><span>. </span>
-    </div>
-  </div>
-</div>
+function formatReferences(summary) {
+    var publicationList = '';
+    for (refs in summary.result) {
+        if (refs !== 'uids') {
+            var authors = '';
+            var publication = '';
+            var authorCount = ((summary.result[refs].authors).length);
+            var i = 0;
+            while (i < authorCount - 1) {
+                authors += summary.result[refs].authors[i].name + ', ';
+                i++;
+            }
+            publication = HTMLpublication.replace('%data%', 'http://www.ncbi.nlm.nih.gov/pubmed/' + refs);
+            authors += summary.result[refs].lastauthor;
+            publication = publication.replace('%authors%', authors);
+            publication = publication.replace('%title%', summary.result[refs].title);
+            publication = publication.replace('%journal%', summary.result[refs].source);
+            publication = publication.replace('%PMID%', summary.result[refs].uid);
+            //Alter formatting if article is In Press
+            if (summary.result[refs].volume !== '') {
+                publication = publication.replace('%volume%', ' ' + summary.result[refs].volume);
+                publication = publication.replace('%issue%', '(' + summary.result[refs].issue + ')');
+                publication = publication.replace('%pages%', ': ' + summary.result[refs].pages + '. ');
+                var date = summary.result[refs].pubdate.slice(0, 4);
+                publication = publication.replace('%date%', date + '');
+            } else {
+                publication = publication.replace('%volume%', ' In Press');
+                publication = publication.replace('%issue%', '.');
+                publication = publication.replace('%pages%', '');
+                publication = publication.replace('%date%', '');
+            }
+            publicationList = publication + publicationList;
+        }
+    }
+    return (publicationList);
+} 
 
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://aacr.silverchair-cdn.com/aacr/content_public/journal/clincancerres/issue/28/20/2/m_clincanres_28_20_cover.png?Expires=1671344776&Signature=2RW9hfrfWmBcVmch3mYbcMu4kWIZ5Z6Czg80oelpHFXzfDrYVxrOez6BypmHH4ZDr1ZipR8SPsZ-tYoTDT6HtnDQAeA7gXCtYt9MQR05ax4JM6XrwHuqxt7sjYpnLmgszdCPpjh4fgHNekbo74VFua1-gf2kKiFaMoP-JMvITmXUvA~Qen5egfUa1ceTkKBgwuyMFunFn2C3fvsKXt-UoZ-woclqKrzk929G1~l0P~KyhklWRMwja3hCgTM9rVVvo9O5vR2nchK6qIk1cy-Y4Yob-gEYB7JmhDOyJF9WPjr1XLrU4uMss8SiKKh8L9siYlFLMMyW9E5m5pTAnoOlHw__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-		<span class="authors">
-            Apfelbaum AA, Wu F, Hawkins AG, Magnuson B, Jiménez JA, Taylor SD, Wrenn ED, <strong>Waltner O</strong>, Pfaltzgraff ER, Song JY, Hall C, Wellik DM, Ljungman M, <strong>Furlan SN</strong>, Ryan RJH, Sarthy JF, Lawlor ER.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/35653119/">
-                EWS::FLI1 and HOXD13 Control Tumor Cell Plasticity in Ewing Sarcoma.
-            </a><span class="source">Clin Cancer Res</span>.
-        
-        
-            <span class="pubdate">2022 Oct 14;</span><span class="volume">28</span><span class="issue">(20)</span><span class="pages">:4466-4478</span><span>. </span><span class="doi">doi: 10.1158/1078-0432.CCR-22-0384. </span><span class="pmid">PubMed PMID:
-            35653119</span><span class="pmcid">; PubMed Central PMCID:
-                PMC9588607</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-	  </div>
-    <div class="ncbi-docsum">
-				<img src="img/ncoms.jpeg" width="120" alt="" style="float:left; padding: 5px;"/>		
-      <span class="authors">
-            Huang BJ, Smith JL, Farrar JE, Wang YC, Umeda M, Ries RE, Leonti AR, Crowgey E, <strong>Furlan SN</strong>, Tarlock K, Armendariz M, Liu Y, Shaw TI, Wei L, Gerbing RB, Cooper TM, Gamis AS, Aplenc R, Kolb EA, Rubnitz J, Ma J, Klco JM, Ma X, Alonzo TA, Triche T Jr, Meshinchi S.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/36123353/">
-                Integrated stem cell signature and cytomolecular risk determination in pediatric acute myeloid leukemia.
-            </a><span class="source">Nat Commun</span>.
-        
-        
-            <span class="pubdate">2022 Sep 19;</span><span class="volume">13</span><span class="issue">(1)</span><span class="pages">:5487</span><span>. </span><span class="doi">doi: 10.1038/s41467-022-33244-6. </span><span class="pmid">PubMed PMID:
-            36123353</span><span class="pmcid">; PubMed Central PMCID:
-                PMC9485122</span><span>. </span>
-    </div>
-  </div>
-</div>
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="img/bloodj.png" width="120" alt="" style="float:left; padding: 5px;"/>		
-      <span class="authors">
-            Wilkens AB, Fulton E, Pont MJ, Cole GO, Leung I, Stull SM, Hart MR, Bernstein ID, <strong>Furlan SN</strong>, Riddell SR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/35605191/">
-                NOTCH1 signaling during CD4+ T-cell activation alters transcription factor networks and enhances antigen responsiveness.
-            </a><span class="source">Blood</span>.
-        
-        
-            <span class="pubdate">2022 May 23;</span><span>. </span><span class="doi">doi: 10.1182/blood.2021015144. </span><span class="pubstatus">[Epub ahead of print] </span><span class="pmid">PubMed PMID:
-            35605191</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="citation-wrap">
-		<h1>2021</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://ash.silverchair-cdn.com/ash/content_public/journal/bloodadvances/issue/5/23/36/m_advances_5_23.cover.png?Expires=1671345801&Signature=HbhCvuvdNBMhBe8uMLLEdf03FbnTJ50R0u5Ubzh8i1MvrMzS5OBCuNUlDTkh1tYYcnzyuqhwyHw2GbttlobRYLnI6CB3H-Vnv2dFNmVmPP-ks7U5bofPakDXM5GbeReRKx8TgGi2pZxvLZagx63yDNi14ZXTGLPGv9rBtiGWTYJ7hMAMA6v-r8YvFIfw9yLta6W0Bf~WySLAUpSlV-5zl5JDZk~4S4l9g8xgcjsMKd6ORsUKbmITvCz-Z~OTWlKgvnQAXVQkqK8zwaArONfWbbxXyxbMwpVkyI2kdBZRX5FSz7pAQQ8fUdmDSRnbFlgNoM8E1NvX~sSDOnQyIWCueA__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Huang BJ, Smith JL, Wang YC, Taghizadeh K, Leonti AR, Ries RE, Liu Y, Kolekar P, Tarlock K, Gerbing R, Crowgey E, <strong>Furlan SN</strong>, Shaw TI, Hagiwara K, Wei L, Cooper TM, Gamis AS, Aplenc R, Kolb EA, Farrar JE, Triche T, Alonzo TA, Ma X, Meshinchi S.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/34547772/">
-                CBFB-MYH11 fusion transcripts distinguish acute myeloid leukemias with distinct molecular landscapes and outcomes.
-            </a><span class="source">Blood Adv</span>.
-        
-        
-            <span class="pubdate">2021 Dec 14;</span><span class="volume">5</span><span class="issue">(23)</span><span class="pages">:4963-4968</span><span>. </span><span class="doi">doi: 10.1182/bloodadvances.2021004965. </span><span class="pmid">PubMed PMID:
-            34547772</span><span class="pmcid">; PubMed Central PMCID:
-                PMC9153007</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://df6sxcketz7bb.cloudfront.net/volumes/6/22/6-22-cover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Inoue T, Koyama M, Kaida K, Ikegame K, Ensbey KS, Samson L, Takahashi S, Zhang P, Minnie SA, Maruyama S, Ishii S, Daimon T, Fukuda T, Nakamae H, Ara T, Maruyama Y, Ishiyama K, Ichinohe T, Atsuta Y, Blazar BR, <strong>Furlan SN</strong>, Ogawa H, Hill GR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/34637399/">
-                Peritransplant glucocorticoids redistribute donor T cells to the bone marrow and prevent relapse after haploidentical SCT.
-            </a><span class="source">JCI Insight</span>.
-        
-        
-            <span class="pubdate">2021 Nov 22;</span><span class="volume">6</span><span class="issue">(22)</span><span>. </span><span class="doi">doi: 10.1172/jci.insight.153551. </span><span class="pmid">PubMed PMID:
-            34637399</span><span class="pmcid">; PubMed Central PMCID:
-                PMC8663779</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-					<img src="https://ars.els-cdn.com/content/image/1-s2.0-S1465324921X00096-cov200h.gif" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Hippen KL, <strong>Furlan SN</strong>, Roychoudhuri R, Wang E, Zhang Y, Osborn MJ, Merkel SC, Hani S, MacMillan ML, Cichocki F, Miller JS, Wagner JE, Restifo NP, Kean LS, Blazar BR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/33893050/">
-                Multiply restimulated human thymic regulatory T cells express distinct signature regulatory T-cell transcription factors without evidence of exhaustion.
-            </a><span class="source">Cytotherapy</span>.
-        
-        
-            <span class="pubdate">2021 Aug;</span><span class="volume">23</span><span class="issue">(8)</span><span class="pages">:704-714</span><span>. </span><span class="doi">doi: 10.1016/j.jcyt.2021.02.118. </span><span class="pubstatus">Epub 2021 Apr 20. </span><span class="pmid">PubMed PMID:
-            33893050</span><span class="pmcid">; PubMed Central PMCID:
-                PMC9275118</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-		<img src="https://media.springernature.com/w200/springer-static/cover-hires/journal/41587/39/7" width="120" alt="" style="float:left; padding: 5px;"/>
-
-      <span class="authors">
-            Wu SJ*, <strong>Furlan SN*</strong>, Mihalas AB, Kaya-Okur HS, Feroze AH, Emerson SN, Zheng Y, Carson K, Cimino PJ, Keene CD, Sarthy JF, Gottardo R, Ahmad K, Henikoff S, Patel AP.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/33846646/">
-                Single-cell CUT&amp;Tag analysis of chromatin modifications in differentiation and tumor progression.
-            </a><span class="source">Nat Biotechnol</span>.
-        
-        
-            <span class="pubdate">2021 Jul;</span><span class="volume">39</span><span class="issue">(7)</span><span class="pages">:819-824</span><span>. </span><span class="doi">doi: 10.1038/s41587-021-00865-z. </span><span class="pubstatus">Epub 2021 Apr 12. </span><span class="pmid">PubMed PMID:
-            33846646</span><span class="pmcid">; PubMed Central PMCID:
-                PMC8277750</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://ascopubs.org/na101/home/literatum/publisher/asco/journals/content/jco/2021/jco.2021.39.issue-17/jco.2021.39.issue-17/20210607/jco.2021.39.issue-17.cover.gif" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Watkins B, Qayed M, McCracken C, Bratrude B, Betz K, Suessmuth Y, Yu A, Sinclair S, <strong>Furlan S</strong>, Bosinger S, Tkachev V, Rhodes J, Tumlin AG, Narayan A, Cribbin K, Gillespie S, Gooley TA, Pasquini MC, Hebert K, Kapoor U, Rogatko A, Tighiouart M, Kim S, Bresee C, Choi SW, Davis J, Duncan C, Giller R, Grimley M, Harris AC, Jacobsohn D, Lalefar N, Norkin M, Farhadfar N, Pulsipher MA, Shenoy S, Petrovic A, Schultz KR, Yanik GA, Waller EK, Levine JE, Ferrara JL, Blazar BR, Langston A, Horan JT, Kean LS.
-        </span><a href="https://www.ncbi.nlm.nih.gov/pubmed/33449816/">
-                Phase II Trial of Costimulation Blockade With Abatacept for Prevention of Acute GVHD
-            </a><span class="source">J Clin Oncol. </span>.
-        
-            <span class="pubdate">2021 Jun 10;</span><span class="volume">39</span><span class="issue">(17)</span><span class="pages">:1865-1877</span><span>. </span><span class="doi">doi: 10.1200/JCO.20.01086. </span><span class="pmid">PubMed PMID: 33449816; </span><span class="pmcid">; PubMed Central PMCID: PMC8260909</span><span>. </span>
-    </div>
-  </div>
-</div>
-
+</script>
 
 	
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-				<img src="https://ash.silverchair-cdn.com/ash/content_public/journal/blood/issue/137/8/3/m_bloodjournal_137_8.cover.png?Expires=1671346280&Signature=f9Wz8QRqAtWOvii1URZdmL9s--qajfEJY6jMIhqpQGZkrACK~oHA03R3ioMuT8w0EVWH7RTvkzY5FZtRdM976Q7ouTQx0cTWlu6bvq1XHORouXNm3o1CJMfjUgfy~MmjolkrcGF4MVZ5yFR~PNjX1nROkbzjGDoHoOZrRrRawXsO5ZS7K2tQBL2daRpgfmy09ypJUZbhHsUokGFMlypVBNqEHVU7K2-ePJJ90uAPcPYY3LL27pGJmFuCHXt3QL1aicA~Ys~2sZsCzTJ4SAX27oRe5ZQd9d~ZZD8LGPzYCvcCbL2vcK8k0wsmvFRPmvxg5YbaSqJye-ddUKalSbqPPA__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Thangavelu G, Wang C, Loschi M, Saha A, Osborn MJ, <strong>Furlan SN</strong>, Aoyama K, McDonald-Hyman C, Aguilar EG, Janesick AS, Chandraratna RA, Refaeli Y, Panoskaltsis-Mortari A, MacDonald KP, Hill GR, Zeiser R, Maillard I, Serody JS, Murphy WJ, Munn DH, Blumberg B, Brown C, Kuchroo V, Kean LS, Hippen KL, Noelle RJ, Blazar BR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/32976550/">
-                Repurposing a novel anti-cancer RXR agonist to attenuate murine acute GVHD and maintain graft-versus-leukemia responses.
-            </a><span class="source">Blood</span>.
-        
-        
-            <span class="pubdate">2021 Feb 25;</span><span class="volume">137</span><span class="issue">(8)</span><span class="pages">:1090-1103</span><span>. </span><span class="doi">doi: 10.1182/blood.2020005628. </span><span class="pmid">PubMed PMID:
-            32976550</span><span class="pmcid">; PubMed Central PMCID:
-                PMC7907720</span><span>. </span>
-    </div>
+<div class="container-xxl py-5">
+	<div class="container">
+		<div class="row g-5 align-items-center">
+		  <div class="scroll-pub">
+			   <p id="demo"></p>
+				<script src="js/new_pubmed.js"></script>
+		  </div>           
+	   </div> 
+		<div class="row g-5 align-items-center">
+			  <a href="https://orcid.org/0000-0003-3007-9840">
+				<img src="img/orcid.svg" width = "100">     
+				</a>
+		</div>
   </div>
 </div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.cell.com/cms/asset/6dc0dbf2-8294-40f0-beb2-5ffe41d69870/cov200h.gif" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Srivastava S, <strong>Furlan SN</strong>, Jaeger-Ruckstuhl CA, Sarvothama M, Berger C, Smythe KS, Garrison SM, Specht JM, Lee SM, Amezquita RA, Voillet V, Muhunthan V, Yechan-Gunja S, Pillai SPS, Rader C, Houghton AM, Pierce RH, Gottardo R, Maloney DG, Riddell SR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/33357452/">
-                Immunogenic Chemotherapy Enhances Recruitment of CAR-T Cells to Lung Tumors and Improves Antitumor Efficacy when Combined with Checkpoint Blockade.
-            </a><span class="source">Cancer Cell</span>.
-        
-        
-            <span class="pubdate">2021 Feb 8;</span><span class="volume">39</span><span class="issue">(2)</span><span class="pages">:193-208.e10</span><span>. </span><span class="doi">doi: 10.1016/j.ccell.2020.11.005. </span><span class="pubstatus">Epub 2020 Dec 24. </span><span class="pmid">PubMed PMID:
-            33357452</span><span class="pmcid">; PubMed Central PMCID:
-                PMC7878409</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.science.org/cms/asset/1e8fe8e7-fee0-48ec-8b6e-e6f7064e265b/stm.2021.13.issue-576.smallcover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Tkachev V, Kaminski J, Potter EL, <strong>Furlan SN</strong>, Yu A, Hunt DJ, McGuckin C, Zheng H, Colonna L, Gerdemann U, Carlson J, Hoffman M, Olvera J, English C, Baldessari A, Panoskaltsis-Mortari A, Watkins B, Qayed M, Suessmuth Y, Betz K, Bratrude B, Langston A, Horan JT, Ordovas-Montanes J, Shalek AK, Blazar BR, Roederer M, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/33441422/">
-                Spatiotemporal single-cell profiling reveals that invasive and tissue-resident memory donor CD8<sup>+</sup> T cells drive gastrointestinal acute graft-versus-host disease.
-            </a><span class="source">Sci Transl Med</span>.
-        
-        
-            <span class="pubdate">2021 Jan 13;</span><span class="volume">13</span><span class="issue">(576)</span><span>. </span><span class="doi">doi: 10.1126/scitranslmed.abc0227. </span><span class="pmid">PubMed PMID:
-            33441422</span><span class="pmcid">; PubMed Central PMCID:
-                PMC9469805</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-		<h1>2020</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://ash.silverchair-cdn.com/ash/content_public/journal/bloodadvances/issue/4/8/18/m_advances_4_8.cover.png?Expires=1671346619&Signature=AG3R6HN4xVGtwxjpzFqbfiqhu~ynLZoQ7Cc-cNzVQWe-0pqGzW20ghkv5WcXDVoWyA5YVke20t7R-rkokwYIROLX6EsnMKQUwiqRGKsW5bUfxvDry3pVcS0T3Un6LcFAPFxz0btS-OVvifMsiiXgZWisvpd~ISq5rotK1i5hyejabMWRjzOIi1smNvYLbnXimnP3ISbPWrdWP66ZrNQLoUogKVmBXDdXZuhHsYd~GalYwVpA74C5RrMvp-01GH~4nUxsumrNN9B5r6kmRWmDU9BqGd46oT7joEep-t7iCEdNWCMlxlYvHj2MmcMF9S~M2TFmLVyidrUDcGoE7N14vQ__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            <strong>Furlan SN</strong>, Singh K, Lopez C, Tkachev V, Hunt DJ, Hibbard J, Betz KM, Blazar BR, Trapnell C, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/32311015/">
-                IL-2 enhances ex vivo-expanded regulatory T-cell persistence after adoptive transfer.
-            </a><span class="source">Blood Adv</span>.
-        
-        
-            <span class="pubdate">2020 Apr 28;</span><span class="volume">4</span><span class="issue">(8)</span><span class="pages">:1594-1605</span><span>. </span><span class="doi">doi: 10.1182/bloodadvances.2019001248. </span><span class="pmid">PubMed PMID:
-            32311015</span><span class="pmcid">; PubMed Central PMCID:
-                PMC7189290</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2019</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://oup.silverchair-cdn.com/oup/backfile/Content_public/Journal/neuro-oncology/Issue/21/1/1/m_cover.jpeg?Expires=1671346676&Signature=RFKsiKwBZEpJBlav9rz~cWxmfm3gYimShE0OvzIkRm6yu4tl6KITRhdRltk5XPttuA~nnobC-uv2csNSANV1hZ58Uz2bEFaxT8oCWIe15zgI95o3cucE1N9ptFyfk7Cok7IrTBjjs05NNKtX9SIkjOi2qQJl1HHoBf5OZeaKZ52hBkNRBU1zgN2Yquyus1YabhSVi06CBYyYPljB1Lud5tALyzRw6DFAvH0Z9i~0wJ3DXEoRF1jGx3y-SJpDjTCxq5yPSxj1ApFjHTcxU5e16XqrfThSn-m3hd-y3qD0eoQkrh~sC-zXX9bZQlZ0myJMDynud7rFFtn-lp7EymeOTg__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Lieberman NAP, DeGolier K, Kovar HM, Davis A, Hoglund V, Stevens J, Winter C, Deutsch G, <strong>Furlan SN</strong>, Vitanza NA, Leary SES, Crane CA.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/30169876/">
-                Characterization of the immune microenvironment of diffuse intrinsic pontine glioma: implications for development of immunotherapy.
-            </a><span class="source">Neuro Oncol</span>.
-        
-        
-            <span class="pubdate">2019 Jan 1;</span><span class="volume">21</span><span class="issue">(1)</span><span class="pages">:83-94</span><span>. </span><span class="doi">doi: 10.1093/neuonc/noy145. </span><span class="pmid">PubMed PMID:
-            30169876</span><span class="pmcid">; PubMed Central PMCID:
-                PMC6303470</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2018</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-<img src="img/ncoms.jpeg" width="120" alt="" style="float:left; padding: 5px;"/>	
-      <span class="authors">
-            Colonna L, Peterson CW, Schell JB, Carlson JM, Tkachev V, Brown M, Yu A, Reddy S, Obenza WM, Nelson V, Polacino PS, Mack H, Hu SL, Zeleski K, Hoffman M, Olvera J, <strong>Furlan SN</strong>, Zheng H, Taraseviciute A, Hunt DJ, Betz K, Lane JF, Vogel K, Hotchkiss CE, Moats C, Baldessari A, Murnane RD, English C, Astley CA, Wangari S, Agricola B, Ahrens J, Iwayama N, May A, Stensland L, Huang MW, Jerome KR, Kiem HP, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/30361514/">
-                Evidence for persistence of the SHIV reservoir early after MHC haploidentical hematopoietic stem cell transplantation.
-            </a><span class="source">Nat Commun</span>.
-        
-        
-            <span class="pubdate">2018 Oct 25;</span><span class="volume">9</span><span class="issue">(1)</span><span class="pages">:4438</span><span>. </span><span class="doi">doi: 10.1038/s41467-018-06736-7. </span><span class="pmid">PubMed PMID:
-            30361514</span><span class="pmcid">; PubMed Central PMCID:
-                PMC6202377</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://dm5migu4zj3pb.cloudfront.net/volumes/128/9/128-9-cover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Watkins BK, Tkachev V, <strong>Furlan SN</strong>, Hunt DJ, Betz K, Yu A, Brown M, Poirier N, Zheng HB, Taraseviciute A, Colonna L, Mary C, Blancho G, Soulillou JP, Panoskaltsis-Mortari A, Sharma P, Garcia A, Strobert E, Hamby K, Garrett A, Deane T, Blazar BR, Vanhove B, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/30102255/">
-                CD28 blockade controls T cell activation to prevent graft-versus-host disease in primates.
-            </a><span class="source">J Clin Invest</span>.
-        
-        
-            <span class="pubdate">2018 Aug 31;</span><span class="volume">128</span><span class="issue">(9)</span><span class="pages">:3991-4007</span><span>. </span><span class="doi">doi: 10.1172/JCI98793. </span><span class="pubstatus">Epub 2018 Aug 13. </span><span class="pmid">PubMed PMID:
-            30102255</span><span class="pmcid">; PubMed Central PMCID:
-                PMC6118599</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.cell.com/cms/asset/4f397e54-8247-4a62-b032-0001714df372/cov200h.gif" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Pennell CA, Barnum JL, McDonald-Hyman CS, Panoskaltsis-Mortari A, Riddle MJ, Xiong Z, Loschi M, Thangavelu G, Campbell HM, Storlie MD, Refaeli Y, <strong>Furlan SN</strong>, Jensen MC, Kean LS, Miller JS, Tolar J, Osborn MJ, Blazar BR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/29735365/">
-                Human CD19-Targeted Mouse T Cells Induce B Cell Aplasia and Toxicity in Human CD19 Transgenic Mice.
-            </a><span class="source">Mol Ther</span>.
-        
-        
-            <span class="pubdate">2018 Jun 6;</span><span class="volume">26</span><span class="issue">(6)</span><span class="pages">:1423-1434</span><span>. </span><span class="doi">doi: 10.1016/j.ymthe.2018.04.006. </span><span class="pubstatus">Epub 2018 Apr 7. </span><span class="pmid">PubMed PMID:
-            29735365</span><span class="pmcid">; PubMed Central PMCID:
-                PMC5986973</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://aacr.silverchair-cdn.com/aacr/content_public/journal/cancerdiscovery/issue/8/6/5/m_candisc_8_6_cover.png?Expires=1671346831&Signature=HChiG7243oeJTamTkSI14Yim3ygPnuf6g01rHYkPcXgnH874GoYLDTXNF6lWt3lXqgWrtgoSfG70tHh2SYE6g30N3ey8MBxBJyN7KBgPTsZdeL5wJ05Mqi-Pg~O1Zpq9tsJM8DVyLZPkW0Aw267hkyUfzapU3w2w62uy1LQnZFfTESpTVl6coGWnFjNOsoizMmdWXLckXl0ESG4X0gMcaYDJyJiU07nJ5Q4xF6WxCq5JBhrq0SUtQhZOnhOwrAghMaVdZK3jw4tT~gXsNXiB0GTlwzrrYuPV8Iaq1ofV61ZnhpY3oBIaStHg3r0UYFGy-nkupAHC0mjEwS2xNzpxQA__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Taraseviciute A, Tkachev V, Ponce R, Turtle CJ, Snyder JM, Liggitt HD, Myerson D, Gonzalez-Cuyar L, Baldessari A, English C, Yu A, Zheng H, <strong>Furlan SN</strong>, Hunt DJ, Hoglund V, Finney O, Brakke H, Blazar BR, Berger C, Riddell SR, Gardner R, Kean LS, Jensen MC.
-      </span><a href="https://pubmed.ncbi.nlm.nih.gov/29563103/">
-                Chimeric Antigen Receptor T Cell-Mediated Neurotoxicity in Nonhuman Primates.
-            </a><span class="source">Cancer Discov</span>.
-        
-        
-            <span class="pubdate">2018 Jun;</span><span class="volume">8</span><span class="issue">(6)</span><span class="pages">:750-763</span><span>. </span><span class="doi">doi: 10.1158/2159-8290.CD-17-1368. </span><span class="pubstatus">Epub 2018 Mar 21. </span><span class="pmid">PubMed PMID:
-            29563103</span><span class="pmcid">; PubMed Central PMCID:
-                PMC6058704</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2017</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.science.org/cms/asset/be745bef-b798-45c2-8f70-f577ef330994/stm.2017.9.issue-408.smallcover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Tkachev V, <strong>Furlan SN</strong>, Watkins B, Hunt DJ, Zheng HB, Panoskaltsis-Mortari A, Betz K, Brown M, Schell JB, Zeleski K, Yu A, Kirby I, Cooley S, Miller JS, Blazar BR, Casson D, Bland-Ward P, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/28931653/">
-                Combined OX40L and mTOR blockade controls effector T cell activation while preserving T<sub>reg</sub> reconstitution after transplant.
-            </a><span class="source">Sci Transl Med</span>.
-        
-        
-            <span class="pubdate">2017 Sep 20;</span><span class="volume">9</span><span class="issue">(408)</span><span>. </span><span class="doi">doi: 10.1126/scitranslmed.aan3085. </span><span class="pmid">PubMed PMID:
-            28931653</span><span class="pmcid">; PubMed Central PMCID:
-                PMC5681253</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.science.org/cms/asset/aa8fc724-44bb-4027-87f0-bf646ea4ac3a/science.2017.357.issue-6352.cover.gif" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Cao J, Packer JS, Ramani V, Cusanovich DA, Huynh C, Daza R, Qiu X, Lee C, <strong>Furlan SN</strong>, Steemers FJ, Adey A, Waterston RH, Trapnell C, Shendure J.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/28818938/">
-                Comprehensive single-cell transcriptional profiling of a multicellular organism.
-            </a><span class="source">Science</span>.
-        
-        
-            <span class="pubdate">2017 Aug 18;</span><span class="volume">357</span><span class="issue">(6352)</span><span class="pages">:661-667</span><span>. </span><span class="doi">doi: 10.1126/science.aam8940. </span><span class="pmid">PubMed PMID:
-            28818938</span><span class="pmcid">; PubMed Central PMCID:
-                PMC5894354</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2016</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://ash.silverchair-cdn.com/ash/content_public/journal/blood/issue/128/21/3/m_bloodjournal_128_21_cover.png?Expires=1671346933&Signature=gmes7ZG7ov8mQiDz~e4V1aoZC6-EhO8aXgctLhRTpj6CTRzEEnmb1x4VqAW4j06jgX4Ffyxra9S~y5~yWH66TyKvMrZbaV0tOF4mjmftqAYtzYgblTytkPzvnn4lF5m-zp4mPBs1f78IbdtlHYtUOUVsCkdEzFbJBH-tBEgP4sRkdH4qbLEGH8IALGCswXpUfcmoK14t7ODTbcWeudDjjgLP6-7dgbbPaZkU0XhdfVTKjZwHOeRH9liDLWINMxYg48cPZEYdMxauG4shPna42NfmDfMUfUAZQgOYHTtfsyxIVVHrF9bZ~4F-49e9bYkTxlDSUh3Zw~zqmlfl4oi6eg__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            <strong>Furlan SN</strong>, Watkins B, Tkachev V, Cooley S, Panoskaltsis-Mortari A, Betz K, Brown M, Hunt DJ, Schell JB, Zeleski K, Yu A, Giver CR, Waller EK, Miller JS, Blazar BR, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/27758873/">
-                Systems analysis uncovers inflammatory Th/Tc17-driven modules during acute GVHD in monkey and human T cells.
-            </a><span class="source">Blood</span>.
-        
-        
-            <span class="pubdate">2016 Nov 24;</span><span class="volume">128</span><span class="issue">(21)</span><span class="pages">:2568-2579</span><span>. </span><span class="doi">doi: 10.1182/blood-2016-07-726547. </span><span class="pubstatus">Epub 2016 Oct 6. </span><span class="pmid">PubMed PMID:
-            27758873</span><span class="pmcid">; PubMed Central PMCID:
-                PMC5123196</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://dm5migu4zj3pb.cloudfront.net/volumes/126/7/126-7-cover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            Saha A, O&#x27;Connor RS, Thangavelu G, Lovitch SB, Dandamudi DB, Wilson CB, Vincent BG, Tkachev V, Pawlicki JM, <strong>Furlan SN</strong>, Kean LS, Aoyama K, Taylor PA, Panoskaltsis-Mortari A, Foncea R, Ranganathan P, Devine SM, Burrill JS, Guo L, Sacristan C, Snyder NW, Blair IA, Milone MC, Dustin ML, Riley JL, Bernlohr DA, Murphy WJ, Fife BT, Munn DH, Miller JS, Serody JS, Freeman GJ, Sharpe AH, Turka LA, Blazar BR.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/27294527/">
-                Programmed death ligand-1 expression on donor T cells drives graft-versus-host disease lethality.
-            </a><span class="source">J Clin Invest</span>.
-        
-        
-            <span class="pubdate">2016 Jul 1;</span><span class="volume">126</span><span class="issue">(7)</span><span class="pages">:2642-60</span><span>. </span><span class="doi">doi: 10.1172/JCI85796. </span><span class="pubstatus">Epub 2016 Jun 13. </span><span class="pmid">PubMed PMID:
-            27294527</span><span class="pmcid">; PubMed Central PMCID:
-                PMC4922691</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2015</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.science.org/cms/asset/d868a675-b856-4094-979d-075065592a4a/stm.2015.7.issue-315.largecover.jpg" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            <strong>Furlan SN</strong>, Watkins B, Tkachev V, Flynn R, Cooley S, Ramakrishnan S, Singh K, Giver C, Hamby K, Stempora L, Garrett A, Chen J, Betz KM, Ziegler CG, Tharp GK, Bosinger SE, Promislow DE, Miller JS, Waller EK, Blazar BR, Kean LS.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/26606970/">
-                Transcriptome analysis of GVHD reveals aurora kinase A as a targetable pathway for disease prevention.
-            </a><span class="source">Sci Transl Med</span>.
-        
-        
-            <span class="pubdate">2015 Nov 25;</span><span class="volume">7</span><span class="issue">(315)</span><span class="pages">:315ra191</span><span>. </span><span class="doi">doi: 10.1126/scitranslmed.aad3231. </span><span class="pmid">PubMed PMID:
-            26606970</span><span class="pmcid">; PubMed Central PMCID:
-                PMC4876606</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-      
-          
-
-
-<div class="citation-wrap">
-	<h1>2014</h1>
-  <div class="citation">
-    <div class="align-left">
-    </div>
-    <div class="ncbi-docsum">
-						<img src="https://www.tandfonline.com/action/showCoverImage?doi=10.1080/kmab20.v006.i01" width="120" alt="" style="float:left; padding: 5px;"/>
-      <span class="authors">
-            <strong>Furlan SN</strong>, Mandraju R, Brewer T, Roybal K, Troutman TD, Hu W, Palm NW, Unni A, Pasare C.
-        </span><a href="https://pubmed.ncbi.nlm.nih.gov/24284965/">
-                Enhancement of anti-tumor CD8 immunity by IgG1-mediated targeting of Fc receptors.
-            </a><span class="source">MAbs</span>.
-        
-        
-            <span class="pubdate">2014 Jan-Feb;</span><span class="volume">6</span><span class="issue">(1)</span><span class="pages">:108-18</span><span>. </span><span class="doi">doi: 10.4161/mabs.27052. </span><span class="pmid">PubMed PMID:
-            24284965</span><span class="pmcid">; PubMed Central PMCID:
-                PMC3929435</span><span>. </span>
-    </div>
-  </div>
-</div>
-
-
-
 
     <!-- Footer Start -->
     <div class="container-fluid bg-light footer mt-6 pt-6 wow fadeIn" data-wow-delay="0.1s">
