@@ -30,6 +30,18 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .service-item img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </head>
 
 <body>
@@ -110,9 +122,9 @@
 					<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/viewmastR">
-							<img class="img-fluid mb-4" src="img/viewmaster2.png" alt="" width= "250" href="https://github.com/furlan-lab/viewmastR">
+							<img class="img-fluid mb-4" src="img/viewmaster2.png" alt="" height="200" width="200" href="https://github.com/furlan-lab/viewmastR">
 							<h5 class="mb-3">ViewmastR</h5></a>
-							<p>Quickly annotate single cell genomic profiles using a reference and GPU with Rust machine learning</p>
+							<p>Quickly annotate single cell genomic profiles using a reference dataset and GPU acceleration. Leverages Rust-based machine learning algorithms for fast and accurate cell type identification. Optimized for large-scale single-cell RNA-seq datasets with minimal computational overhead.</p>
 							<a href="https://github.com/furlan-lab/viewmastR">Visit github repo<i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
                 	</div>
@@ -120,18 +132,18 @@
 					<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/mutCaller">
-							<img class="img-fluid mb-4" src="img/mutcaller3.png" width="250" alt="" >
+							<img class="img-fluid mb-4" src="img/mutcaller3.png" height="200" width="200" alt="" >
 							<h5 class="mb-3">mutCallR</h5></a>
-							<p>Rust command line tools for quickly annotated single cell genomics data for variants</p>
+							<p>Rust command line tools for rapidly annotating single cell genomics data with variant information. Enables detection and analysis of somatic mutations at single-cell resolution. Designed for high-throughput processing with efficient memory usage and parallel computation capabilities.</p>
 							<a href="https://github.com/furlan-lab/mutCaller">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 					</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/henipipe">
-							<img class="img-fluid mb-4" src="img/henipipe.png" width="275" alt="">
+							<img class="img-fluid mb-4" src="img/henipipe.png" height="200" width="200" alt="">
 							<h5 class="mb-3">henipipe</h5></a>
-							<p>Software for quick processing of bulk and single-cell Cut and Tag data</p>
+							<p>Comprehensive software pipeline for quick processing of both bulk and single-cell CUT&Tag chromatin profiling data. Automates alignment, peak calling, and quality control steps. Provides integrated workflows for downstream analysis and visualization of epigenetic landscapes.</p>
 							<a href="https://github.com/furlan-lab/henipipe">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 					</div>
@@ -140,27 +152,27 @@
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/mergebams">
-							<img class="img-fluid mb-4" src="img/mergebams.png" width="288" alt="">
+							<img class="img-fluid mb-4" src="img/mergebams.png" height="200" width="200" alt="">
 							<h5 class="mb-3">mergebams</h5></a>
-							<p>Command line tool for merging single cell rna-sequencing bams with intelligent tag preservation</p>
+							<p>Command line tool for merging single cell RNA-sequencing BAM files while intelligently preserving cell barcode and UMI tags. Efficiently handles large datasets with multi-threaded processing. Maintains data integrity and compatibility with downstream single-cell analysis pipelines.</p>
 							<a href="https://github.com/furlan-lab/mergebams">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/mergebamsR">
-							<img class="img-fluid mb-4" src="img/mergebamsR.png" width="300" alt="">
+							<img class="img-fluid mb-4" src="img/mergebamsR.png" height="200" width="200" alt="">
 							<h5 class="mb-3">mergebams</h5></a>
-							<p>R based tool for filtering and merging single cell rna-sequencing bams with intelligent tag preservation</p>
+							<p>R-based tool for filtering and merging single cell RNA-sequencing BAM files with intelligent tag preservation. Provides convenient R interface for quality filtering and merging operations. Integrates seamlessly with popular R-based single-cell analysis workflows like Seurat and Bioconductor packages.</p>
 							<a href="https://github.com/furlan-lab/mergebamsR">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/scrubletR">
-							<img class="img-fluid mb-4" src="img/hex.png" width="290" alt="">
+							<img class="img-fluid mb-4" src="img/hex.png" height="200" width="200" alt="">
 							<h5 class="mb-3">scrubletR</h5></a>
-							<p>Scrublet in native R</p>
+							<p>Native R implementation of the Scrublet algorithm for detecting doublets in single-cell RNA-seq data. Eliminates Python dependencies while maintaining compatibility with R-based workflows. Provides fast and accurate identification of multiplets to improve data quality.</p>
 							<a href="https://github.com/furlan-lab/scrubletR">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
@@ -169,27 +181,27 @@
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/rustytools">
-							<img class="img-fluid mb-4" src="img/rustytools.png" width="288" alt="">
+							<img class="img-fluid mb-4" src="img/rustytools2.png" height="200" width="200" alt="">
 							<h5 class="mb-3">rustytools</h5></a>
-							<p>Rust toolbox for R</p>
+							<p>Comprehensive Rust toolbox providing high-performance computational functions for R. Implements memory-efficient algorithms for common bioinformatics operations. Bridges the speed of Rust with the convenience of R for accelerated data analysis workflows.</p>
 							<a href="https://github.com/furlan-lab/mergebams">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/vdjmatchR">
-							<img class="img-fluid mb-4" src="img/vdjmatchR.png" width="290" alt="">
+							<img class="img-fluid mb-4" src="img/vdjmatchR.png" height="200" width="200" alt="">
 							<h5 class="mb-3">vdjmatchR</h5></a>
-							<p>R package for matching and analyzing V(D)J sequences from single-cell immune repertoire data</p>
+							<p>R package for matching and analyzing V(D)J sequences from single-cell immune repertoire data. Enables clonotype identification and tracking across samples and conditions. Provides visualization tools and statistical methods for studying immune receptor diversity and clonal dynamics.</p>
 							<a href="https://github.com/furlan-lab/vdjmatchR">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/scrHLAtag">
-							<img class="img-fluid mb-4" src="img/scrHLAtag.png" width="290" alt="">
+							<img class="img-fluid mb-4" src="img/scrHLAtag.png" height="200" width="200" alt="">
 							<h5 class="mb-3">scrHLAtag</h5></a>
-							<p>Command-line tool for HLA typing from long-read single-cell sequencing data</p>
+							<p>Command-line tool for HLA typing from long-read single-cell sequencing data. Accurately resolves HLA alleles at high resolution using Oxford Nanopore or PacBio data. Enables personalized immunogenomics studies and transplant compatibility assessment at single-cell resolution.</p>
 							<a href="https://github.com/furlan-lab/scrHLAtag">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
@@ -198,18 +210,18 @@
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/flscuts">
-							<img class="img-fluid mb-4" src="img/flscuts.png" width="290" alt="">
+							<img class="img-fluid mb-4" src="img/flscuts.png" height="200" width="200" alt="">
 							<h5 class="mb-3">flscuts</h5></a>
-							<p>R package for analyzing ATAC-seq and CUT&Tag data with FLS motif analysis</p>
+							<p>R package providing commonly used shortcuts and utility functions for streamlined genomics analysis. Simplifies repetitive tasks and reduces code complexity in data processing workflows. Includes tools for visualization, data manipulation, and quality control operations.</p>
 							<a href="https://github.com/furlan-lab/flscuts">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
 				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="service-item bg-light p-5">
 							<a href="https://github.com/furlan-lab/splitncigar">
-							<img class="img-fluid mb-4" src="img/splitncigar.png" width="290" alt="">
+							<img class="img-fluid mb-4" src="img/splitncigar.png" height="200" width="200" alt="">
 							<h5 class="mb-3">splitncigar</h5></a>
-							<p>Rust tool for splitting and processing CIGAR strings in BAM files for splice junction analysis</p>
+							<p>Rust tool for splitting and processing CIGAR strings in BAM files for splice junction analysis. Efficiently extracts and analyzes splicing patterns from aligned RNA-seq data. Supports both bulk and single-cell applications with high-speed parallel processing capabilities.</p>
 							<a href="https://github.com/furlan-lab/splitncigar">Visit github repo <i class="fa fa-arrow-right ms-2"></i></a>
 						</div>
 				</div>
